@@ -1,0 +1,25 @@
+<%#
+name: Regenerate puppet certificate
+job_category: Puppet
+description_format: Regenerate puppet certificate
+snippet: false
+provider_type: SSH
+kind: job_template
+%>
+
+<% # this template requires safe mode to be disabled -%>
+
+<%= render_template('Service Action - SSH Default', :service => 'puppet', :action => 'stop') -%>
+
+<% if preview? -%>
+#   this would delete a certificate on puppet ca, but running in preview mode
+<% else -%>
+  <%= @host.puppet_ca_proxy.statuses[:puppetca].destroy(@host.name) && '# deleted cert on proxy' %>
+<% end -%>
+# delete the old cert and key
+ssl_path=`puppet config print ssldir`
+rm -rf $ssl_path/*
+# generate a new one
+puppet agent --onetime --no-usecacheonfailure --verbose --tags no_such_tag
+
+<%= render_template('Service Action - SSH Default', :service => 'puppet', :action => 'start') -%>
