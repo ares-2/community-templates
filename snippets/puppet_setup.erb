@@ -9,10 +9,10 @@ os_major  = @host.operatingsystem.major.to_i
 os_name   = @host.operatingsystem.name
 
 if os_family == 'Freebsd'
-  freebsd_package = @host.param_true?('enable-puppet4') ? 'puppet4' : 'puppet38'
+  freebsd_package = host_param_true?('enable-puppet4') ? 'puppet4' : 'puppet38'
   etc_path = '/usr/local/etc/puppet'
   bin_path = '/usr/local/bin'
-elsif @host.param_true?('enable-puppetlabs-pc1-repo') || @host.param_true?('enable-puppet4')
+elsif host_param_true?('enable-puppetlabs-pc1-repo') || host_param_true?('enable-puppet4')
   linux_package = 'puppet-agent'
   etc_path = '/etc/puppetlabs/puppet'
   bin_path = '/opt/puppetlabs/bin'
@@ -34,7 +34,7 @@ if [ -f /usr/bin/dnf ]; then
 else
   yum -t -y install <%= linux_package %>
 fi
-<% elsif os_name == 'SLES' && @host.param_true?('enable-puppetlabs-pc1-repo') -%>
+<% elsif os_name == 'SLES' && host_param_true?('enable-puppetlabs-pc1-repo') -%>
 rpmkeys --import http://yum.puppetlabs.com/RPM-GPG-KEY-puppetlabs
 rpmkeys --import http://yum.puppetlabs.com/RPM-GPG-KEY-puppet
 <%= bin_path %>/puppet resource service puppet enable=true
@@ -55,7 +55,7 @@ puppet_unit=puppet
 <% if os_family == 'Freebsd' -%>
 echo 'puppet_enable="YES"' >>/etc/rc.conf
 <% end -%>
-<% unless @host.param_true?('enable-puppetlabs-pc1-repo') -%>
+<% unless host_param_true?('enable-puppetlabs-pc1-repo') -%>
 <% if os_family == 'Debian' -%>
 if [ -f "/etc/default/puppet" ]
 then
@@ -82,7 +82,7 @@ run-puppet-in-installer to true.
 
 Note, that this is an *unsupported mode of operation* and not supported by Foreman at all. You have been warned!
 %>
-<% if @host.param_true?('run-puppet-in-installer') -%>
+<% if host_param_true?('run-puppet-in-installer') -%>
 <% if (os_name == 'Ubuntu' and os_major >= 15) or (os_name == 'Debian' and os_major >= 8) -%>
 # Puppet tries to detect the init system by checking the presence of the directory /run/systemd/system. That detection
 # fails in a chroot environment like the one the installer provides. See Puppet tickets PA-136 and PUP-5577
@@ -94,4 +94,4 @@ mkdir -p /run/systemd/system
 # export a custom fact called 'is_installer' to allow detection of the installer environment in Puppet modules
 export FACTER_is_installer=true
 # passing a non-existent tag like "no_such_tag" to the puppet agent only initializes the node
-<%= bin_path %>/puppet agent --config <%= etc_path %>/puppet.conf --onetime <%= @host.param_true?('run-puppet-in-installer') ? '' : '--tags no_such_tag' %> <%= @host.puppetmaster.blank? ? '' : "--server #{@host.puppetmaster}" %> --no-daemonize
+<%= bin_path %>/puppet agent --config <%= etc_path %>/puppet.conf --onetime <%= host_param_true?('run-puppet-in-installer') ? '' : '--tags no_such_tag' %> <%= @host.puppetmaster.blank? ? '' : "--server #{@host.puppetmaster}" %> --no-daemonize
