@@ -41,15 +41,6 @@ class FakeStruct
   def to_s
     as_string
   end
-
-  # Roughly equivalent to HostCommon#param_true?/false in Foreman core
-  def param_true?(name)
-    params[name] == 'true'
-  end
-
-  def param_false?(name)
-    params[name] == 'false'
-  end
 end
 
 class FakeNamespace
@@ -90,6 +81,22 @@ class FakeNamespace
       ),
       :mac => '00:00:00:00:00:01'
     )
+  end
+
+  def host_enc
+    @host.info
+  end
+
+  def host_param(name)
+    @host.params[name]
+  end
+
+  def host_param_true?(name)
+    host_param(name) == 'true'
+  end
+
+  def host_param_false?(name)
+    host_param(name) == 'false'
   end
 
   def snippet(*args)
