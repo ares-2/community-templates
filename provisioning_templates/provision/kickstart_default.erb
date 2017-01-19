@@ -6,7 +6,7 @@ oses:
 - Fedora
 %>
 <%#
-This template is cool accepts the following parameters:
+This template accepts the following parameters:
 - lang: string (default="en_US.UTF-8")
 - selinux-mode: string (default="enforcing")
 - keyboard: string (default="us")
@@ -221,7 +221,7 @@ sed -e 's/DEFAULTKERNEL=kernel-uek/DEFAULTKERNEL=kernel/g' -i /etc/sysconfig/ker
 sync
 
 # Inform the build system that we are done.
-echo "Informing Foreman that we are built"
+echo "Informing Foreman that we are built now"
 wget -q -O /dev/null --no-check-certificate <%= foreman_url('built') %>
 ) 2>&1 | tee /root/install.post.log
 exit 0
