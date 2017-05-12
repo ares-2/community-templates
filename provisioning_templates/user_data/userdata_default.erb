@@ -1,0 +1,16 @@
+<%#
+name: UserData default
+snippet: false
+model: ProvisioningTemplate
+kind: user_data
+%>
+#cloud-config
+hostname: <%= @host.shortname %>
+fqdn: <%= @host %>
+manage_etc_hosts: true
+
+<%# Contact Foreman to confirm instance is built -%>
+phone_home:
+ url: <%= foreman_url('built') %>
+ post: []
+ tries: 10
